@@ -1,165 +1,156 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# FleetCore API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A REST API for managing the vehicle fleet and its maintenance lifecycle. It includes JWT authentication, role-based authorization, PostgreSQL with TypeORM, audit logs, Swagger, and idempotent test seed data.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Coder Information
 
-## Description
+- **Name:** Andrés Gutiérrez
+- **Clan:** Cohort 5
+- **Public repository:** [FleetCore](https://github.com/AndrxsGutierrez/FleetCore)
 
-API REST para FleetCore construida con NestJS y organizada por módulos.
+## Technologies
 
-## Endpoint de salud y Swagger
+- Node.js and TypeScript
+- NestJS
+- PostgreSQL and TypeORM
+- JWT and bcrypt
+- class-validator and class-transformer
+- Swagger / OpenAPI
+- Docker and Docker Compose
+- Vitest
 
-- `GET /health`: consulta el estado de disponibilidad de la API.
-- Swagger UI: `http://localhost:3000/api/docs`.
+## Features
 
-## Vehículos
+- Vehicle, mechanic, and workshop management with logical deactivation.
+- Scheduling and tracking of preventive and corrective maintenance.
+- Validation of availability, mileage, status transitions, and schedule overlaps.
+- JWT authentication and authorization for `ADMIN` and `TECHNICIAN` roles.
+- Technicians can view their assigned maintenance jobs.
+- External integrations can query vehicle availability and maintenance history using `x-api-key`.
+- Successful data-changing operations are audited; ADMIN users can query the audit log.
+- Global response interceptor, exception filter, and Swagger documentation.
 
-La API permite registrar, listar y consultar vehículos por identificador o placa, actualizar sus
-datos y activarlos o inactivarlos sin borrar su historial. Los endpoints están documentados en
-Swagger bajo la etiqueta **Vehículos**. Por ahora no tienen protección de rutas.
+## Project Structure
 
-Antes de iniciar PostgreSQL con Docker, configura en `.env` las variables de base de datos tomando
-como referencia `.env.example`.
-
-## Mecánicos
-
-El módulo permite registrar, listar, consultar, actualizar y activar o inactivar mecánicos sin
-eliminar sus registros. Los endpoints están documentados en Swagger bajo **Mecánicos**.
-
-Configura las variables de PostgreSQL en `.env` tomando como referencia `.env.example`.
-
-## Talleres
-
-El módulo permite registrar, listar talleres activos, consultar por identificador, actualizar y
-activar o inactivar talleres. La lista también permite filtrar por estado. Los endpoints están
-documentados en Swagger bajo la etiqueta **Talleres**.
-
-## Mantenimientos
-
-El módulo permite programar mantenimientos preventivos y correctivos, consultar asignaciones e
-historial, y avanzar su estado con validación de disponibilidad, kilometraje y cruces de horario.
-Los endpoints están documentados en Swagger bajo **Mantenimientos**.
-
-## Project setup
-
-```bash
-$ npm install
+```text
+src/
+├── audits/        # Audit log recording and queries
+├── auth/          # Login, JWT, roles, guards, and decorators
+├── common/        # Response interceptor and exception filter
+├── database/      # Test data seeder
+├── health/        # Health endpoint
+├── maintenances/  # Maintenance operations and business rules
+├── mechanics/     # Mechanics
+├── vehicles/      # Vehicles and external integration
+└── workshops/     # Workshops
 ```
 
-## Compile and run the project
+## Prerequisites
+
+- Docker and Docker Compose
+- Node.js and npm if you run the seeder from your machine
+
+## Environment Variables
+
+Create a `.env` file from the example:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
 ```
 
-## Run tests
+Set your own values for `JWT_SECRET` and `API_KEYS`. Generate random keys with:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+openssl rand -hex 32
 ```
 
-## Deployment
+Use one generated value for `JWT_SECRET` and another for `API_KEYS`. To configure multiple API keys, separate them with commas. Do not use the example values in a real environment.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+`POSTGRES_HOST=localhost` is used when running commands from your machine. Docker Compose overrides it so the API connects to the `db` service on the Compose network.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Installation and Docker Execution
+
+From the project root, run:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker compose up -d --build
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project, run this and approve the code it prints at [observe.nestjs.com/link](https://observe.nestjs.com/link) - signing up for free if you have no account:
+Check the containers and view API logs:
 
 ```bash
-$ npx @nestjs/observe link
+docker compose ps
+docker compose logs -f api
 ```
 
-It installs `@nestjs/observe`, wires it into `AppModule` and `main.ts`, and writes the app key and secret into `.env`, which every `nest start` script (`start`, `start:dev`, `start:debug`) then loads. In production, set `OBSERVE_APP_KEY` and `OBSERVE_APP_SECRET` in the environment instead.
-
-Or do it by hand:
+The API is available at `http://localhost:3000` (or the port configured in `APP_PORT`). PostgreSQL data is persisted in the `pgdata` volume. Stop the services without deleting the database with:
 
 ```bash
-$ npm install @nestjs/observe
+docker compose down
 ```
 
-Then follow the [setup guide](https://docs.nestjs.com/observability/sdk) - it takes a single import and an app key.
+## Seeder and Test Credentials
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+The seeder creates or updates the sample data and can be run repeatedly without creating duplicates. From your machine, with PostgreSQL running, execute:
 
-## Resources
+```bash
+docker compose up -d db
+npm install
+npm run seed
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+The command compiles the seeder to a cache directory inside `node_modules` and does not write to `dist`.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+The seed data includes one ADMIN, two TECHNICIAN users linked to active mechanics, one inactive mechanic, two workshops (one active and one inactive), four vehicles, and completed and in-progress maintenance records.
 
-## Support
+| Role | Email | Password |
+| --- | --- | --- |
+| ADMIN | `admin@fleetcore.test` | `FleetCoreDemo123` |
+| TECHNICIAN | `tecnico1@fleetcore.test` | `FleetCoreDemo123` |
+| TECHNICIAN | `tecnico2@fleetcore.test` | `FleetCoreDemo123` |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## API Documentation and Endpoints
 
-## Stay in touch
+Swagger UI: **[http://localhost:3000/api/docs](http://localhost:3000/api/docs)**.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Method and route | Access | Description |
+| --- | --- | --- |
+| `GET /health` | Public | Check API status |
+| `POST /auth/login` | Public | Log in and receive a JWT |
+| `POST /auth/register` | ADMIN | Create an account; `mechanicId` is required for `TECHNICIAN` |
+| `GET /auth/me` | JWT | Get the authenticated user's profile |
+| `/vehicles` | ADMIN + JWT | Create, list, view, update, activate, and deactivate vehicles |
+| `GET /vehicles/:id/external-summary` | `x-api-key` | Get availability and maintenance history, including mechanic and workshop |
+| `/mechanics` | ADMIN + JWT | Manage mechanics |
+| `/workshops` | ADMIN + JWT | Manage workshops |
+| `/maintenances` | ADMIN + JWT | Schedule and query maintenance records |
+| `GET /maintenances/assigned-to-me` | TECHNICIAN + JWT | View assigned maintenance records |
+| `GET /maintenances/:id` | ADMIN or assigned TECHNICIAN | View a maintenance record |
+| `PATCH /maintenances/:id/status` | ADMIN or assigned TECHNICIAN | Advance the maintenance status according to its business rules |
+| `GET /audits` | ADMIN + JWT | Query audit records; supports `page` and `limit` |
 
-## License
+In Swagger, select **Authorize** to configure the JWT for protected routes or the `x-api-key` for the integration endpoint. These are separate credentials. For Bearer Auth, paste the JWT; for the integration endpoint, paste one of the keys configured in `API_KEYS`.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Responses
+
+Successful responses use a common format with `statusCode`, `success`, `data`, `path`, and `timestamp`. Errors include `statusCode`, `success`, `message`, `path`, and `timestamp`.
+
+## Tests
+
+The project uses Vitest. Available commands:
+
+```bash
+npm run test
+npm run test:e2e
+npm run test:cov
+```
+
+## PostgreSQL Backup
+
+With the database container running, create a dump for submission to Moodle:
+
+```bash
+docker exec fleetcore-db pg_dump -U fleetcore -d fleetcore > fleetcore.sql
+```
+
+If you changed `DB_CONTAINER_NAME`, `POSTGRES_USER`, or `POSTGRES_DB` in `.env`, update those values in the command. Verify the `fleetcore.sql` file and upload it with the requested evidence.

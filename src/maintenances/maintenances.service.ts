@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,6 +9,8 @@ import { EntityManager } from 'typeorm';
 import { MechanicStatus } from '../mechanics/entities/mechanic.entity.js';
 import { VehicleStatus } from '../vehicles/entities/vehicle.entity.js';
 import { WorkshopStatus } from '../workshops/entities/workshop.entity.js';
+import type { AuthenticatedUser } from '../auth/authenticated-user.js';
+import { UserRole } from '../auth/entities/user.entity.js';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto.js';
 import { ListMaintenancesDto } from './dto/list-maintenances.dto.js';
 import { UpdateMaintenanceStatusDto } from './dto/update-maintenance-status.dto.js';
@@ -49,6 +52,21 @@ export class MaintenancesService {
 
   findByMechanic(mechanicId: number): Promise<Maintenance[]> {
     return this.maintenanceDao.findByMechanic(mechanicId);
+  }
+
+  findAssignedToUser(user: AuthenticatedUser): Promise<Maintenance[]> {
+    return this.maintenanceDao.findByMechanic(this.requireMechanicId(user));
+  }
+
+  async findOneForUser(id: number, user: AuthenticatedUser): Promise<Maintenance> {
+    if (user.role === UserRole.ADMIN) return this.findOne(id);
+
+    const mechanicId = this.requireMechanicId(user);
+    const maintenance = await this.maintenanceDao.findByIdForMechanic(id, mechanicId);
+    if (!maintenance) {
+      throw new NotFoundException(`No existe un mantenimiento asignado al usuario con id ${id}.`);
+    }
+    return maintenance;
   }
 
   async create(dto: CreateMaintenanceDto): Promise<Maintenance> {
@@ -161,6 +179,7 @@ export class MaintenancesService {
   async updateStatus(
     id: number,
     dto: UpdateMaintenanceStatusDto,
+    user: AuthenticatedUser,
   ): Promise<Maintenance> {
     // The maintenance transition and its vehicle availability change commit or roll back together.
     await this.maintenanceDao.transaction(async (manager) => {
@@ -172,6 +191,14 @@ export class MaintenancesService {
         throw new NotFoundException(
           `No existe un mantenimiento con identificador ${id}.`,
         );
+      }
+
+      if (user.role === UserRole.TECHNICIAN) {
+        const mechanicId = this.requireMechanicId(user);
+        const assignedMechanicId = await this.maintenanceDao.findMechanicId(manager, id);
+        if (assignedMechanicId !== mechanicId) {
+          throw new NotFoundException(`No existe un mantenimiento asignado al usuario con id ${id}.`);
+        }
       }
 
       this.assertValidTransition(maintenance.status, dto.status);
@@ -284,5 +311,12 @@ export class MaintenancesService {
         'Los datos de cierre solo se aceptan al completar el mantenimiento.',
       );
     }
+  }
+
+  private requireMechanicId(user: AuthenticatedUser): number {
+    if (user.role !== UserRole.TECHNICIAN || user.mechanicId == null) {
+      throw new ForbiddenException('El usuario técnico no tiene un mecánico vinculado.');
+    }
+    return user.mechanicId;
   }
 }

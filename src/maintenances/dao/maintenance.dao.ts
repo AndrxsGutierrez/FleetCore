@@ -129,6 +129,13 @@ export class MaintenanceDao {
     });
   }
 
+  findByIdForMechanic(id: number, mechanicId: number): Promise<Maintenance | null> {
+    return this.repository.findOne({
+      where: { id, mechanic: { id: mechanicId } },
+      relations: { vehicle: true, mechanic: true, workshop: true },
+    });
+  }
+
   findByVehicle(vehicleId: number): Promise<Maintenance[]> {
     return this.repository.find({
       where: { vehicle: { id: vehicleId } },
@@ -161,5 +168,16 @@ export class MaintenanceDao {
       relations: { vehicle: true },
     });
     return maintenance?.vehicle.id ?? null;
+  }
+
+  async findMechanicId(
+    manager: EntityManager,
+    maintenanceId: number,
+  ): Promise<number | null> {
+    const maintenance = await manager.getRepository(Maintenance).findOne({
+      where: { id: maintenanceId },
+      relations: { mechanic: true },
+    });
+    return maintenance?.mechanic.id ?? null;
   }
 }

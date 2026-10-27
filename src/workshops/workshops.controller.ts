@@ -1,14 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -20,8 +23,15 @@ import { CreateWorkshopDto } from './dto/create-workshop.dto.js';
 import { ListWorkshopsDto } from './dto/list-workshops.dto.js';
 import { UpdateWorkshopDto } from './dto/update-workshop.dto.js';
 import { WorkshopsService } from './workshops.service.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { UserRole } from '../auth/entities/user.entity.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
 
 @ApiTags('Talleres')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 @Controller('workshops')
 export class WorkshopsController {
   constructor(private readonly workshopsService: WorkshopsService) {}
@@ -34,7 +44,9 @@ export class WorkshopsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar talleres activos; permite filtrar por estado' })
+  @ApiOperation({
+    summary: 'Listar talleres activos; permite filtrar por estado',
+  })
   @ApiOkResponse({ description: 'Lista de talleres.' })
   findAll(@Query() query: ListWorkshopsDto) {
     return this.workshopsService.findAll(query);
@@ -44,7 +56,9 @@ export class WorkshopsController {
   @ApiOperation({ summary: 'Consultar un taller por identificador' })
   @ApiParam({ name: 'id', type: Number })
   @ApiOkResponse({ description: 'Taller encontrado.' })
-  @ApiNotFoundResponse({ description: 'No existe un taller con ese identificador.' })
+  @ApiNotFoundResponse({
+    description: 'No existe un taller con ese identificador.',
+  })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.workshopsService.findOne(id);
   }
@@ -53,12 +67,17 @@ export class WorkshopsController {
   @ApiOperation({ summary: 'Actualizar los datos de un taller' })
   @ApiParam({ name: 'id', type: Number })
   @ApiOkResponse({ description: 'Taller actualizado.' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateWorkshopDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateWorkshopDto,
+  ) {
     return this.workshopsService.update(id, dto);
   }
 
-  @Patch(':id/deactivate')
-  @ApiOperation({ summary: 'Inactivar un taller sin eliminar su historial' })
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Inactivar un taller sin borrar su registro ni historial',
+  })
   @ApiParam({ name: 'id', type: Number })
   @ApiOkResponse({ description: 'Taller inactivado.' })
   deactivate(@Param('id', ParseIntPipe) id: number) {

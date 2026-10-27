@@ -39,6 +39,13 @@ Swagger bajo la etiqueta **Vehículos**. Por ahora no tienen protección de ruta
 Antes de iniciar PostgreSQL con Docker, configura en `.env` las variables de base de datos tomando
 como referencia `.env.example`.
 
+## Mecánicos
+
+El módulo permite registrar, listar, consultar, actualizar y activar o inactivar mecánicos sin
+eliminar sus registros. Los endpoints están documentados en Swagger bajo **Mecánicos**.
+
+Configura las variables de PostgreSQL en `.env` tomando como referencia `.env.example`.
+
 ## Project setup
 
 ```bash

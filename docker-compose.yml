@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    # Reinstala desde el lockfile al iniciar; /app/node_modules es un volumen persistente.
+    # El volumen node_modules persiste entre arranques; npm ci lo sincroniza con el lockfile.
     command: ["sh", "-c", "npm ci && npm run start:dev -- --path tsconfig.docker.json"]
 
     container_name: fleercore

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HealthModule } from './health/health.module.js';
+import { MaintenancesModule } from './maintenances/maintenances.module.js';
 import { MechanicsModule } from './mechanics/mechanics.module.js';
 import { VehiclesModule } from './vehicles/vehicles.module.js';
 import { WorkshopsModule } from './workshops/workshops.module.js';
@@ -20,6 +21,7 @@ import { WorkshopsModule } from './workshops/workshops.module.js';
       synchronize: process.env.NODE_ENV !== 'production',
     }),
     HealthModule,
+    MaintenancesModule,
     MechanicsModule,
     VehiclesModule,
     WorkshopsModule,

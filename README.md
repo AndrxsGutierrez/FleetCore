@@ -52,6 +52,12 @@ El módulo permite registrar, listar talleres activos, consultar por identificad
 activar o inactivar talleres. La lista también permite filtrar por estado. Los endpoints están
 documentados en Swagger bajo la etiqueta **Talleres**.
 
+## Mantenimientos
+
+El módulo permite programar mantenimientos preventivos y correctivos, consultar asignaciones e
+historial, y avanzar su estado con validación de disponibilidad, kilometraje y cruces de horario.
+Los endpoints están documentados en Swagger bajo **Mantenimientos**.
+
 ## Project setup
 
 ```bash

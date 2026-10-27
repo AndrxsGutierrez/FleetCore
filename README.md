@@ -46,6 +46,12 @@ eliminar sus registros. Los endpoints están documentados en Swagger bajo **Mec�
 
 Configura las variables de PostgreSQL en `.env` tomando como referencia `.env.example`.
 
+## Talleres
+
+El módulo permite registrar, listar talleres activos, consultar por identificador, actualizar y
+activar o inactivar talleres. La lista también permite filtrar por estado. Los endpoints están
+documentados en Swagger bajo la etiqueta **Talleres**.
+
 ## Project setup
 
 ```bash

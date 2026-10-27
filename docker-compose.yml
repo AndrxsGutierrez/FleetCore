@@ -1,0 +1,62 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # El volumen node_modules persiste entre arranques; npm ci lo sincroniza con el lockfile.
+    command: ["sh", "-c", "npm ci && npm run start:dev -- --path tsconfig.docker.json"]
+
+    container_name: fleercore
+
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    deploy:
+      resources:
+        limits:
+          cpus: "${DB_CPU_LIMIT}"
+          memory: ${DB_MEM_LIMIT}
+    networks:
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    container_name: "${DB_CONTAINER_NAME}"
+    ports:
+     - "${POSTGRES_PORT}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: "${DB_CPU_LIMIT}"
+          memory: ${DB_MEM_LIMIT}
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
+    driver: bridge

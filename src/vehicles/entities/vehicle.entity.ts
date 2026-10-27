@@ -35,9 +35,9 @@ export class Vehicle {
   @Column({ type: 'enum', enum: VehicleStatus, default: VehicleStatus.AVAILABLE })
   status!: VehicleStatus;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz', select: false })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', select: false })
   updatedAt!: Date;
 }

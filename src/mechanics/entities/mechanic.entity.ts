@@ -28,9 +28,9 @@ export class Mechanic {
   @Column({ type: 'enum', enum: MechanicStatus, default: MechanicStatus.ACTIVE })
   status!: MechanicStatus;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz', select: false })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', select: false })
   updatedAt!: Date;
 }

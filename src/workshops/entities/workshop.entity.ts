@@ -25,9 +25,9 @@ export class Workshop {
   @Column({ type: 'enum', enum: WorkshopStatus, default: WorkshopStatus.ACTIVE })
   status!: WorkshopStatus;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz', select: false })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', select: false })
   updatedAt!: Date;
 }

@@ -30,6 +30,15 @@ API REST para FleetCore construida con NestJS y organizada por módulos.
 - `GET /health`: consulta el estado de disponibilidad de la API.
 - Swagger UI: `http://localhost:3000/api/docs`.
 
+## Vehículos
+
+La API permite registrar, listar y consultar vehículos por identificador o placa, actualizar sus
+datos y activarlos o inactivarlos sin borrar su historial. Los endpoints están documentados en
+Swagger bajo la etiqueta **Vehículos**. Por ahora no tienen protección de rutas.
+
+Antes de iniciar PostgreSQL con Docker, configura en `.env` las variables de base de datos tomando
+como referencia `.env.example`.
+
 ## Project setup
 
 ```bash

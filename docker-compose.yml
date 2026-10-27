@@ -4,7 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    command: npm run start:dev -- --path tsconfig.docker.json
+    # Reinstala desde el lockfile al iniciar; /app/node_modules es un volumen persistente.
+    command: ["sh", "-c", "npm ci && npm run start:dev -- --path tsconfig.docker.json"]
 
     container_name: fleercore
 
